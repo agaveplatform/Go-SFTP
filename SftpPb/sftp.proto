@@ -9,6 +9,7 @@ message Sftp {
 	string systemId = 3;
 	string hostKey  = 4;
 	string fileName = 5;
+	string hostPort = 6;
 
 	//
 	//string queueId = 3;
@@ -16,14 +17,13 @@ message Sftp {
 	//string HttpPort = 5;
 	//string Appname = 6;
 	//string Runmode = 7;
-	//string sqluser = 8;
-	//string sqlpass = 9;
 	//string manager = 10;
 	//string userAuthConfig = 11;
 	//string encryptionKey = 12;
 	//string searchPermission = 13;
 	//string remoteDataClient = 14;
 	//string owner = 15;
+	//string maxPacket = 16;
 }
 //copyRemoteToLocalService()
 

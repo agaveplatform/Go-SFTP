@@ -28,9 +28,10 @@ func doUnary(c sftppb.SFTPClient) {
 		Sftp: &sftppb.Sftp{
 			Username: "foo",
 			SystemId: "192.168.1.14",
-			FileName: "test.txt",
+			FileName: "test12.txt",
 			HostKey:  "",
-			PassWord: "",
+			PassWord: "123",
+			HostPort: ":2225",
 		},
 	}
 	res, err := c.CopyLocalToRemoteService(context.Background(), req)

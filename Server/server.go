@@ -19,7 +19,7 @@ import (
 type server struct{}
 
 func main() {
-	fmt.Println("Hello World")
+	fmt.Println("Server was initialized")
 
 	lis, err := net.Listen("tcp", "0.0.0.0:50051")
 	if err != nil {
@@ -47,22 +47,29 @@ func (*server) CopyLocalToRemoteService(ctx context.Context, req *sftppb.CopyLoc
 	fmt.Println(username)
 	hostKey := req.Sftp.HostKey
 	fmt.Println(hostKey)
-	port := ":22"
+	hostPort := req.Sftp.HostPort
+	fmt.Println(hostPort)
+
+	if username != "" {
+		if passWord != "" {
+
+		}
+	}
 	// get host public key
-	HostKey := getHostKey(systemId)
+	//HostKey := getHostKey(systemId)
 
 	config := ssh.ClientConfig{
 		User: username,
 		Auth: []ssh.AuthMethod{
 			ssh.Password(passWord),
 		},
-		// HostKeyCallback: ssh.InsecureIgnoreHostKey(),
-		HostKeyCallback: ssh.FixedHostKey(HostKey),
+		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
+		//HostKeyCallback: ssh.FixedHostKey(HostKey),
 	}
 
 	result := ""
 	// connect
-	conn, err := ssh.Dial("tcp", systemId+port, &config)
+	conn, err := ssh.Dial("tcp", systemId+hostPort, &config)
 	if err != nil {
 		log.Println(err)
 		result = err.Error()
@@ -78,15 +85,15 @@ func (*server) CopyLocalToRemoteService(ctx context.Context, req *sftppb.CopyLoc
 	defer client.Close()
 
 	// create destination file
-	dstFile, err := client.Create("./file.txt")
+	dstFile, err := client.Create(fileName)
 	if err != nil {
 		log.Println(err)
 		result = err.Error()
 	}
 	defer dstFile.Close()
 
-	// create source file
-	srcFile, err := os.Open("./file.txt")
+	// open source file
+	srcFile, err := os.Open(fileName)
 	if err != nil {
 		log.Println(err)
 		result = err.Error()
@@ -113,29 +120,33 @@ func getHostKey(host string) ssh.PublicKey {
 	fmt.Println(host)
 	file, err := os.Open(filepath.Join(os.Getenv("HOME"), ".ssh", "known_hosts"))
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
+	fmt.Println(file)
 	defer file.Close()
 
 	scanner := bufio.NewScanner(file)
 	var hostKey ssh.PublicKey
+	fmt.Println(hostKey)
 	for scanner.Scan() {
 		fields := strings.Split(scanner.Text(), " ")
+		fmt.Println(fields)
 		if len(fields) != 3 {
 			continue
 		}
 		if strings.Contains(fields[0], host) {
+
 			var err error
 			hostKey, _, _, _, err = ssh.ParseAuthorizedKey(scanner.Bytes())
 			if err != nil {
-				log.Fatalf("error parsing %q: %v", fields[2], err)
+				log.Printf("error parsing %q: %v", fields[2], err)
 			}
 			break
 		}
 	}
 
 	if hostKey == nil {
-		log.Fatalf("no hostkey found for %s", host)
+		log.Println("no hostkey found for " + host)
 	}
 
 	return hostKey
