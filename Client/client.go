@@ -18,7 +18,10 @@ func main() {
 	defer conn.Close()
 
 	c := sftppb.NewSFTPClient(conn)
+	// push file test
 	doUnary(c)
+
+	//p
 
 }
 

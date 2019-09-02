@@ -105,6 +105,7 @@ func (*server) CopyLocalToRemoteService(ctx context.Context, req *sftppb.CopyLoc
 		log.Println(err)
 		result = err.Error()
 	}
+
 	fmt.Printf("%d bytes copied\n", bytes)
 
 	res := &sftppb.CopyLocalToRemoteResponse{
@@ -114,6 +115,89 @@ func (*server) CopyLocalToRemoteService(ctx context.Context, req *sftppb.CopyLoc
 	return res, nil
 }
 
+func (*server) CopyFromRemoteService(ctx context.Context, req *sftppb.CopyFromRemoteRequest) (*sftppb.CopyFromRemoteResponse, error) {
+	fmt.Printf("Greet function was invoked with %v\n", req)
+	fileName := req.Sftp.FileName
+	fmt.Println("\n" + fileName)
+	passWord := req.Sftp.PassWord
+	fmt.Println(passWord)
+	systemId := req.Sftp.SystemId
+	fmt.Println(systemId)
+	username := req.Sftp.Username
+	fmt.Println(username)
+	hostKey := req.Sftp.HostKey
+	fmt.Println(hostKey)
+	hostPort := req.Sftp.HostPort
+	fmt.Println(hostPort)
+
+	if username != "" {
+		if passWord != "" {
+
+		}
+	}
+	// get host public key
+	//HostKey := getHostKey(systemId)
+
+	config := ssh.ClientConfig{
+		User: username,
+		Auth: []ssh.AuthMethod{
+			ssh.Password(passWord),
+		},
+		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
+		//HostKeyCallback: ssh.FixedHostKey(HostKey),
+	}
+
+	result := ""
+	// connect
+	conn, err := ssh.Dial("tcp", systemId+hostPort, &config)
+	if err != nil {
+		log.Println(err)
+		result = err.Error()
+	}
+	defer conn.Close()
+
+	// create new SFTP client
+	client, err := sftp.NewClient(conn)
+	if err != nil {
+		log.Println(err)
+		result = err.Error()
+	}
+	defer client.Close()
+
+	// create destination file
+	dstFile, err := os.Create(fileName)
+	if err != nil {
+		log.Println(err)
+		result = err.Error()
+	}
+	defer dstFile.Close()
+
+	// open source file
+	srcFile, err := client.Open(fileName)
+	if err != nil {
+		log.Println(err)
+		result = err.Error()
+	}
+
+	// copy with the WriteTo function
+	bytesWritten, err := srcFile.WriteTo(dstFile)
+	if err != nil {
+		log.Println(err)
+	}
+	// copy source file to destination file
+	//bytes, err := io.Copy(dstFile, srcFile)
+	//if err != nil {
+	//	log.Println(err)
+	//	result = err.Error()
+	//}
+	fmt.Printf("%d bytes copied\n", bytesWritten)
+
+	res := &sftppb.CopyFromRemoteResponse{
+		Result: result,
+	}
+	fmt.Println(res.String())
+	return res, nil
+}
 func getHostKey(host string) ssh.PublicKey {
 	// parse OpenSSH known_hosts file
 	// ssh or use ssh-keyscan to get initial key

@@ -24,6 +24,8 @@ message Sftp {
 	//string remoteDataClient = 14;
 	//string owner = 15;
 	//string maxPacket = 16;
+	//string bufferSize = 17;
+
 }
 //copyRemoteToLocalService()
 
@@ -33,9 +35,18 @@ message CopyLocalToRemoteRequest{
 message CopyLocalToRemoteResponse{
 	string result = 1;
 }
+//service SFTP{
+//	rpc CopyLocalToRemoteService(CopyLocalToRemoteRequest) returns (CopyLocalToRemoteResponse);
+//}
 
+message CopyFromRemoteRequest{
+	Sftp sftp = 1;
+}
+message CopyFromRemoteResponse{
+	string result = 1;
+}
 service SFTP{
+	rpc CopyFromRemoteService(CopyFromRemoteRequest) returns (CopyFromRemoteResponse);
 	rpc CopyLocalToRemoteService(CopyLocalToRemoteRequest) returns (CopyLocalToRemoteResponse);
 }
-
 
