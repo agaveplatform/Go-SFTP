@@ -35,6 +35,7 @@ func init() {
 func main() {
 	log.Println("Server was initialized")
 
+	// set up the protobuf server
 	lis, err := net.Listen("tcp", "0.0.0.0:50051")
 	if err != nil {
 		log.Fatalf("Failed to listen: %v", err)
@@ -50,7 +51,7 @@ func main() {
 }
 
 func (*server) CopyLocalToRemoteService(ctx context.Context, req *sftppb.CopyLocalToRemoteRequest) (*sftppb.CopyLocalToRemoteResponse, error) {
-	log.Printf("Greet function was invoked with %v\n", req)
+	log.Printf("CopyLocalToRemoteService function was invoked with %v\n", req)
 	fileName := req.Sftp.FileName
 	passWord := req.Sftp.PassWord
 	systemId := req.Sftp.SystemId
@@ -80,6 +81,7 @@ func (*server) CopyLocalToRemoteService(ctx context.Context, req *sftppb.CopyLoc
 	conn, err := ssh.Dial("tcp", systemId+hostPort, &config)
 	if err != nil {
 		log.Printf("Error Dialing the server: %f", err)
+		log.Error(err)
 		result = err.Error()
 	}
 	defer conn.Close()
@@ -131,7 +133,7 @@ func (*server) CopyLocalToRemoteService(ctx context.Context, req *sftppb.CopyLoc
 }
 
 func (*server) CopyFromRemoteService(ctx context.Context, req *sftppb.CopyFromRemoteRequest) (*sftppb.CopyFromRemoteResponse, error) {
-	log.Printf("Greet function was invoked with %v\n", req)
+	log.Printf("CopyFromRemoteService function was invoked with %v\n", req)
 	fileName := req.Sftp.FileName
 	passWord := req.Sftp.PassWord
 	systemId := req.Sftp.SystemId
