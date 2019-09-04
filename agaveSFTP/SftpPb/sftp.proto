@@ -1,0 +1,53 @@
+syntax="proto3";
+
+package sftp;
+option go_package="sftppb";
+
+message Sftp {
+	string username = 1;
+	string passWord = 2;
+	string systemId = 3;
+	string hostKey  = 4;
+	string fileName = 5;
+	string hostPort = 6;
+	string clientKey = 7;
+
+	//
+	//string queueId = 3;
+	//string hostId = 4;
+	//string HttpPort = 5;
+	//string Appname = 6;
+	//string Runmode = 7;
+	//string manager = 10;
+	//string userAuthConfig = 11;
+	//string encryptionKey = 12;
+	//string searchPermission = 13;
+	//string remoteDataClient = 14;
+	//string owner = 15;
+	//string maxPacket = 16;
+	//string bufferSize = 17;
+
+}
+//copyRemoteToLocalService()
+
+message CopyLocalToRemoteRequest{
+	Sftp sftp = 1;
+}
+message CopyLocalToRemoteResponse{
+	string result = 1;
+}
+//service SFTP{
+//	rpc CopyLocalToRemoteService(CopyLocalToRemoteRequest) returns (CopyLocalToRemoteResponse);
+//}
+
+message CopyFromRemoteRequest{
+	Sftp sftp = 1;
+}
+message CopyFromRemoteResponse{
+	string result = 1;
+}
+service SFTP{
+	rpc CopyFromRemoteService(CopyFromRemoteRequest) returns (CopyFromRemoteResponse);
+	rpc CopyLocalToRemoteService(CopyLocalToRemoteRequest) returns (CopyLocalToRemoteResponse);
+}
+
